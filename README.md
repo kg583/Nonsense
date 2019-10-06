@@ -8,7 +8,7 @@ While reminiscent of a monkey picking words from a dictionary, Nonsense has some
 
 Nonsense interprets words by splitting them into _syllables_, each containing  _consonants_ and _vowels_ (where `y` is a vowel). Consonants correspond to variables, while vowels correspond to instructions. Integers can be stored in consonant variables as well as the _array_ (denoted `S` here), an arbitrarily long list (initialized to zeroes) which is accessed by indexing (see the section on the letter `e` below). The zeroth entry in the array is called _result_, and is always updated with the value of the most recent command (think of it like `Ans` in TI-Basic).
 
-To run Nonsense programs for yourself, simply download `interpreter.py` and the associated `words_dictionary.json` file.
+To run Nonsense programs for yourself, simply download `interpreter.py` and the associated `words_dictionary.json` file into the same directory; the dictionary file is used to check that all words are valid English words, and is actually quite lenient for what does count as word. Run `interpreter.py` with your program (or as it is called, a _paragraph_) as the first argument; you'll get a list of the syllables that the interpreter has found, and then any input/output calls (input calls have no additional prompt text).
 
 ## Syllables
 
