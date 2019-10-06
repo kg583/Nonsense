@@ -85,7 +85,7 @@ def search(words, counter):
 
 
 def main():
-    paragraph = input().lower()
+    paragraph = sys.argv[1].lower()
     for punc in PUNCTUATION:
         paragraph = paragraph.replace(punc, " " + punc)
     words = paragraph.split()
