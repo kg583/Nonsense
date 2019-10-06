@@ -102,3 +102,12 @@ The I/O command is for inputting integers and outputting text in a program. When
 * `onomatopoeia` : `1+n->n; n+1->m; m+t->t; t+1->p; S[p+1]`
 * `spaghetti` : `s->p; p+g->g; g->S[h]; S[h]->t`
 * `liaison` : `l+s->s; s+1->n`
+
+## Punctuation
+
+Punctuation marks are used to construct simple loops and conditionals within a Nonsense paragraph. The four valid punctuation marks are the comma (`,`), period (`.`), exclamation point (`!`), and question mark (`?`). It is intended that they are written into a paragraph akin to usual English punctuation, being directly adjacent to a word and followed by whitespace.
+
+* `,` : Start of a `while` loop, which uses result as the loop condition; a result of zero will cause the interpreter to skip to the corresponding period.
+* `.` : End of a `while` loop; the interpreter will always return to the corresponding comma upon arrival.
+* `!` : Break conditional, again using result; a nonzero result instantly terminate the program.
+* `?` : If conditional, again using result; a result of zero will skip the following word (akin to an `If` statement without a `Then` in TI-Basic)
