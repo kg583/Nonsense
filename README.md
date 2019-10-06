@@ -110,4 +110,4 @@ Punctuation marks are used to construct simple loops and conditionals within a N
 * `,` : Start of a `while` loop, which uses result as the loop condition; a result of zero will cause the interpreter to skip to the corresponding period.
 * `.` : End of a `while` loop; the interpreter will always return to the corresponding comma upon arrival.
 * `!` : Break conditional, again using result; a nonzero result instantly terminate the program.
-* `?` : If conditional, again using result; a result of zero will skip the following word (akin to an `If` statement without a `Then` in TI-Basic)
+* `?` : If conditional, again using result; a result of zero will skip the following word (akin to an `If` statement without a `Then` in TI-Basic).
