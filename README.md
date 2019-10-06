@@ -8,6 +8,7 @@ While reminiscent of a monkey picking words from a dictionary, Nonsense has some
 
 Nonsense interprets words by splitting them into _syllables_, each containing  _consonants_ and _vowels_ (where `y` is a vowel). Consonants correspond to variables, while vowels correspond to instructions. Integers can be stored in consonant variables as well as the _array_ (denoted `S` here), an arbitrarily long list (initialized to zeroes) which is accessed by indexing (see the section on the letter `e` below). The zeroth entry in the array is called _result_, and is always updated with the value of the most recent command (think of it like `Ans` in TI-Basic).
 
+To run Nonsense programs for yourself, simply download `interpreter.py` and the associated `words_dictionary.json` file.
 
 ## Syllables
 
@@ -37,7 +38,7 @@ The ADD command is pretty straightforward; take the operand, add it to the value
 
 * `ban` : `b+n->n`
 * `band` : `b+n->n; n->d`
-* `baa` : `b+0` (the second `a` has no additional effect)
+* `baa` : `b+S[0]` (the second `a` has no additional effect)
 * `act` : `0+c->c; c->t`
 
 ### `e`: INDEX
@@ -92,3 +93,12 @@ The I/O command is for inputting integers and outputting text in a program. When
 * `you` : `input()+1`
 * `cyan` : `print c; c+n->n`
 * `syzygy` : `print s; s->z; print z; z->g; print g`
+
+### Some Big Ol' Words, Parsed
+
+* `invalidation` : `-n->n; n->v; v+l->l; l-d->d; d+t->t; t-1->n`
+* `beautiful` : `S[b]`
+* `elementary` : `S[0]->S[l]; S[l]->S[m]; S[m]->n; n->t; t+r->r; print r`
+* `onomatopoeia` : `1+n->n; n+1->m; m+t->t; t+1->p; S[p+1]`
+* `spaghetti` : `s->p; p+g->g; g->S[h]; S[h]->t`
+* `liaison` : `l+s->s; s+1->n`
