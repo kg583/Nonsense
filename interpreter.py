@@ -86,6 +86,9 @@ def search(words, counter):
 
 def main():
     paragraph = sys.argv[1].lower()
+    if "\\" in paragraph:
+        paragraph = paragraph[:paragraph.find("\\")]
+
     for punc in PUNCTUATION:
         paragraph = paragraph.replace(punc, " " + punc)
     words = paragraph.split()
