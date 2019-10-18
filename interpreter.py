@@ -50,7 +50,7 @@ def execute(syllable):
             inc = True
         elif letter == "y":
             if op == 0 and syllable[0] == "0":
-                op = int(input())
+                op = int(input(": "))
             else:
                 print(chr(op), end="")
 
