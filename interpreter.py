@@ -36,7 +36,7 @@ def execute(syllable):
     init_str = init
     instr_str = ""
     sec_str = ""
-    loc_str = ""
+    loc_str = "S[0]"
     print_str = ""
 
     index = 1
@@ -115,7 +115,7 @@ def execute(syllable):
             loc_str = init
 
     if args.verbose:
-        print(syllable + ": " + init_str + instr_str + sec_str + ("->" if loc_str else "") + loc_str)
+        print(syllable + ": " + init_str + instr_str + sec_str + "->" + loc_str)
     return print_str
 
 
@@ -200,6 +200,9 @@ def main():
         elif isinstance(seg, int):
             S[0] = seg
             counter += 1
+
+            if args.verbose:
+                print(str(seg) + ": " + str(seg) + "->S[0]")
         else:
             raise ValueError("Invalid word passed through compilation.") from None
 
