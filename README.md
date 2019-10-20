@@ -14,11 +14,11 @@ To run Nonsense programs for yourself, simply download `interpreter.py` and the 
 
 Words are decomposed into syllables which have consonants at either endpoint and vowels in-between. For example, the word `candid` is split into `can`, `nd`, and `did`; notice how syllables overlap at their endpoints. Each syllable is a single instruction, with the beginning consonant corresponding to a stored value (called the _operand_) and the ending consonant corresponding to a destination (called the _location_); the vowels in between are the instructions themselves, and can be compounded via diphthongs.
 
+All words and syllables in Nonsense must start and end with a consonant, though, so when no constant begins or ends a syllable the interpret creates the "invisible" consonant `0`, a null value. When being accessed `0` always returns zero, while as a destination `0` corresponds to result.
+
 ## Consonants
 
 Consonants are easy. There are precisely twenty of them, `b, c, d, ..., x, z`, and each one can hold an integer value (all initialized to zero). A consonant in a word is either a retrieval of that consonant's value (when at the beginning of a syllable, as the operand) or a specification of the destination of a result (when at the end of a syllable, as the location).
-
-All words and syllables in Nonsense must start and end with a consonant, though, so when this occurs the interpret creates the "invisible" consonant `0`, a null value. When being accessed `0` always returns zero, while as a destination `0` corresponds to result.
 
 ## Vowels
 
