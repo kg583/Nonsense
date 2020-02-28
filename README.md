@@ -10,6 +10,8 @@ Nonsense interprets words by splitting them into _syllables_, each containing  _
 
 To run Nonsense programs for yourself, simply download `interpreter.py` and the associated `words_dictionary.json` file into the same directory; the dictionary file is used to check that all words are valid English words, and is actually quite lenient for what does count as word. Run `interpreter.py` with your program (or as it is called, a _paragraph_) as the first argument. You can specify the optional `-v` or `--verbose` argument to have the interpreter return a list of parsed syllables and their human-readable instructions; otherwise, the interpreter will simply display the final output and ask for any inputs during execution (these are prompted by a single `:`).
 
+To aid debugging, a paragraph can be executed via `interpreter.py` with the `-i` or `--inspect`` flag, which will display the current state of all consonants and the array after each instruction execution. Note that the array is not enlarged until necessary.
+
 ## Syllables
 
 Words are decomposed into syllables which have consonants at either endpoint and vowels in-between. For example, the word `candid` is split into `can`, `nd`, and `did`; notice how syllables overlap at their endpoints. Each syllable is a single instruction, with the beginning consonant corresponding to a stored value (called the _operand_) and the ending consonant corresponding to a destination (called the _location_); the vowels in between are the instructions themselves, and can be compounded via diphthongs.
