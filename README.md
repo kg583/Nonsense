@@ -8,7 +8,7 @@ While reminiscent of a monkey picking words from a dictionary, Nonsense has some
 
 Nonsense interprets words by splitting them into _syllables_, each containing  _consonants_ and _vowels_ (where `y` is a vowel). Consonants correspond to variables, while vowels correspond to instructions. Integers can be stored in consonant variables as well as the _array_ (denoted `S` here), an arbitrarily long list (initialized to zeroes) which is accessed by indexing (see the section on the letter `e` below). The zeroth entry in the array is called _result_, and is always updated with the value of the most recent command (think of it like `Ans` in TI-Basic).
 
-To run Nonsense programs for yourself, simply download `interpreter.py` and the associated `words_dictionary.json` file into the same directory; the dictionary file is used to check that all words are valid English words, and is actually quite lenient for what does count as word. Run `interpreter.py` with your program (or as it is called, a _paragraph_) as the first argument. You can specify the optional `-v` or `--verbose` argument to have the interpreter return a list of parsed syllables and they're human-readable instructions; otherwise, the interpreter will simply display the final output and ask for any inputs during execution (these are prompted by a single `:`).
+To run Nonsense programs for yourself, simply download `interpreter.py` and the associated `words_dictionary.json` file into the same directory; the dictionary file is used to check that all words are valid English words, and is actually quite lenient for what does count as word. Run `interpreter.py` with your program (or as it is called, a _paragraph_) as the first argument. You can specify the optional `-v` or `--verbose` argument to have the interpreter return a list of parsed syllables and their human-readable instructions; otherwise, the interpreter will simply display the final output and ask for any inputs during execution (these are prompted by a single `:`).
 
 ## Syllables
 
@@ -105,9 +105,13 @@ The I/O command is for inputting integers and outputting text in a program. When
 
 ## Punctuation
 
-Punctuation marks are used to construct simple loops and conditionals within a Nonsense paragraph. The four valid punctuation marks are the comma (`,`), period (`.`), exclamation point (`!`), and question mark (`?`). It is intended that they are written into a paragraph akin to usual English punctuation, being directly adjacent to a word and followed by whitespace.
+Punctuation marks are used to construct simple loops and conditionals within a Nonsense paragraph. The four valid punctuation marks are the comma (`,`), question mark (`?`), period (`.`), and exclamation point (`!`). It is intended that they are written into a paragraph akin to usual English punctuation, being directly adjacent to a word and followed by whitespace.
 
-* `,` : Start of a `while` loop, which uses result as the loop condition; a result of zero will cause the interpreter to skip to the corresponding period.
-* `.` : End of a `while` loop; the interpreter will always return to the corresponding comma upon arrival.
+* `,` : Start of a `while` loop, which uses result as the loop condition; a result of zero will skip to the corresponding period.
+* `?` : Start of an `if` conditional, again using result; a result of zero will skip to the corresponding period.
+* `.` : End of a `while` loop or `if` conditional; the interpreter will always return to the corresponding comma upon arrival.
 * `!` : Break conditional, again using result; a nonzero result instantly terminates the program.
-* `?` : If conditional, again using result; a result of zero will skip the following word.
+
+## Numbers
+
+Numbers can be used to insert direct values into result, so that incrementing a variable a hundred times can be done in one syllable. When a number appears in a Nonsense paragraph, it must appear without any letters adjacent to it.

@@ -5,11 +5,12 @@ import argparse
 parser = argparse.ArgumentParser(description="Run Nonsense programs.")
 parser.add_argument("paragraph", type=str, help="A Nonsense paragraph.")
 parser.add_argument("--verbose", "-v", action="store_true")
+parser.add_argument("--inspect", "-i", action="store_true")
 args = parser.parse_args()
 
 VOWELS = " aeiouy"
 CONSONANTS = "0bcdfghjklmnpqrstvwxz"
-PUNCTUATION = " ,.?!"
+PUNCTUATION = ",.?!"
 
 S = [0]
 VALS = {letter: 0 for letter in CONSONANTS}
@@ -27,6 +28,14 @@ def extend(index):
     S.extend([0] * (index - len(S) + 1))
 
 
+def lookahead(string, index, dist=2, letter="e"):
+    return [i + 1 for i in range(dist) if len(string) > index + i + 1 and string[index + i + 1] == letter]
+
+
+def wrap(string):
+    return "S[" + string + "]"
+
+
 def execute(syllable):
     init = syllable[0]
     op = VALS[init]
@@ -41,81 +50,67 @@ def execute(syllable):
 
     index = 1
     letter = syllable[1]
+    source = 0
     while letter in VOWELS:
         if letter == "a":
             add = 1
         elif letter == "e":
             init_str = "S[" + init_str + "]"
-            if op >= len(S):
-                op = 0
-            else:
-                op = S[op]
+            op = S[op] if op < len(S) else 0
         elif letter == "i":
             add = -1 + 2 * (add == -1)
         elif letter == "o":
-            op += add + (add == 0)
+            source += 1
+            add = add + (add == 0)
             inc = True
         elif letter == "y":
             if op == 0 and syllable[0] == "0":
                 op = int(input(": "))
+                init_str = "input()"
             else:
-                print_str += chr(op)
+                print_str += chr(op + source)
 
         index += 1
         letter = syllable[index]
 
     loc = letter
+    look = lookahead(syllable, index)
+    if not source:
+        source = S[S[VALS[loc]]] if 2 in look else S[VALS[loc]] if 1 in look else VALS[loc]
+    else:
+        sec_str = str(source)
+    S[0] = op + source * add
+
+    if 2 in look:
+        extend(S[VALS[loc]])
+        loc_str = wrap(wrap(loc))
+        S[S[VALS[loc]]] = S[0]
+    elif 1 in look:
+        extend(VALS[loc])
+        S[VALS[loc]] = S[0]
+        loc_str = wrap(loc)
+    else:
+        S[0] = op + source * add
+        if loc != "0" or inc:
+            if loc == "0":
+                loc = init
+            VALS[loc] = S[0]
+            loc_str = loc
+
     if add > 0:
         instr_str = "+"
     elif add < 0:
         instr_str = "-"
-    elif inc:
-        instr_str = "+"
+    if add and not sec_str:
+        sec_str = loc_str if loc != "0" else "0"
 
-    if len(syllable) > index + 2 and syllable[index + 2] == "e":
-        extend(S[VALS[loc]])
-        S[0] = op + S[S[VALS[loc]]] * add
-        if inc:
-            sec_str = str(add + (add == 0))
-        elif add != 0:
-            sec_str = "S[S[" + loc + "]]"
-
-        if loc != "0":
-            S[S[VALS[loc]]] = S[0]
-            loc_str = "S[S[" + loc + "]]"
-        elif inc:
-            S[S[VALS[init]]] = S[0]
-            loc_str = "S[S[" + init + "]]"
-    elif len(syllable) > index + 1 and syllable[index + 1] == "e":
-        extend(VALS[loc])
-        S[0] = op + S[VALS[loc]] * add
-        if inc:
-            sec_str = str(add + (add == 0))
-        elif add != 0:
-            sec_str = "S[" + loc + "]"
-
-        if loc != "0":
-            S[VALS[loc]] = S[0]
-            loc_str = "S[" + loc + "]"
-        elif inc:
-            S[VALS[init]] = S[0]
-            loc_str = "S[" + init + "]"
-    else:
-        S[0] = op + VALS[loc] * add
-        if inc:
-            sec_str = str(add + (add == 0))
-        elif add != 0:
-            sec_str = loc
-
-        if loc != "0":
-            VALS[loc] = S[0]
-            loc_str = loc
-        elif inc:
-            VALS[init] = S[0]
-            loc_str = init
-
-    if args.verbose:
-        print(syllable + ": " + init_str + instr_str + sec_str + "->" + loc_str)
+    full_str = init_str + instr_str + sec_str + "->" + loc_str
+    full_str.replace("+-", "-").replace("-+", "-").replace("--", "+")
+    if args.verbose or args.inspect:
+        print(syllable + ": " + full_str)
+        if args.inspect:
+            print("Vars: {}".format(VALS))
+            print("Array: {}".format(S))
     return print_str
 
 
@@ -124,7 +119,7 @@ def search(words, counter):
     counter += 1
 
     while count:
-        count += {",": 1, ".": -1}.get(words[counter], 0)
+        count += {",": 1, "?": 1, ".": -1}.get(words[counter], 0)
         counter += 1
 
     return counter
@@ -139,7 +134,6 @@ def main():
         paragraph = paragraph.replace(punc, " " + punc)
     words = paragraph.split()
     syllables = []
-    print_str = ""
 
     english_words = load_words()
     for word in words:
@@ -161,13 +155,15 @@ def main():
                 while index < len(word) and word[index] in VOWELS:
                     index += 1
                 if index < len(word):
-                    syllables.append(word[start:index + 1 + (index + 1 < len(word) and word[index + 1] == "e") + (
-                                index + 2 < len(word) and word[index + 2] == "e")])
+                    look = lookahead(word, index)
+                    syllables.append(word[start:index + 1 + (1 in look) + (2 in look)])
 
         elif word.isnumeric():
             syllables.append(int(word))
-        elif word not in PUNCTUATION:
-            raise ValueError(word + " is not a numeral or English word.") from None
+        elif word in PUNCTUATION:
+            syllables.append(word)
+        else:
+            raise ValueError(word + " is not a numeral, English word, or punctuation mark.") from None
 
     if args.verbose:
         print("Syllables: ", str(syllables))
@@ -177,25 +173,24 @@ def main():
         seg = syllables[counter]
         if isinstance(seg, str):
             if seg in PUNCTUATION:
-                if seg == ",":
+                if seg == "," or seg == "?":
                     if not S[0]:
-                        counter = search(words, counter)
+                        counter = search(syllables, counter)
                     else:
-                        STACK.insert(0, counter)
-                        counter += 1
+                        STACK.insert(0, (counter, seg))
+                    counter += 1
                 elif seg == ".":
                     if len(STACK):
-                        counter = STACK[0]
+                        counter = STACK[0][0] if STACK[0][1] == "," else counter + 1
                         STACK.pop(0)
+                    else:
+                        raise ValueError("Invalid end ('.') without corresponding ',' or '?'.")
                 elif seg == "!":
+                    counter += 1
                     if S[0]:
                         counter = len(syllables)
-                    else:
-                        counter += 1
-                elif seg == "?":
-                    counter += 1 + (not S[0])
             else:
-                print_str += execute(seg)
+                print(execute(seg), end="")
                 counter += 1
         elif isinstance(seg, int):
             S[0] = seg
@@ -206,11 +201,6 @@ def main():
         else:
             raise ValueError("Invalid word passed through compilation.") from None
 
-    if args.verbose:
-        print("Output: ")
-    print(print_str)
-
 
 if __name__ == "__main__":
     main()
-    print()
