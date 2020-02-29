@@ -63,7 +63,7 @@ def execute(syllable):
     source = 0
     while letter in VOWELS:
         if letter == "a":
-            add = 1
+            add += (add == 0)
         elif letter == "e":
             init_str = "S[" + init_str + "]"
             op = S[op] if op < len(S) else 0
@@ -71,7 +71,7 @@ def execute(syllable):
             add = -1 + 2 * (add == -1)
         elif letter == "o":
             source += 1
-            add = add + (add == 0)
+            add += (add == 0)
             inc = True
         elif letter == "y":
             if op == 0 and syllable[0] == "0":
@@ -110,6 +110,9 @@ def execute(syllable):
                 loc = init
             VALS[loc] = S[0]
             loc_str = loc
+
+    if loc_str == "0":
+        loc_str = wrap(loc_str)
 
     if add > 0:
         instr_str = "+"

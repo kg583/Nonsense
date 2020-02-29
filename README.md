@@ -40,7 +40,7 @@ The ADD command is pretty straightforward; take the operand, add it to the value
 
 * `ban` : `b+n->n`
 * `band` : `b+n->n; n->d`
-* `baa` : `b+S[0]` (the second `a` has no additional effect)
+* `baa` : `b+0` (the second `a` has no additional effect)
 * `act` : `0+c->c; c->t`
 
 ### `e`: INDEX
