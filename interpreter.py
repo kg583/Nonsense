@@ -1,9 +1,19 @@
-# Nonsense interpreter
+"""
+Main interpreter script for Nonsense
+Reads input from stdin via a single ": " prompt
+Prints any output to stdout
+
+params:
+    paragraph: A valid Nonsense paragraph
+    --verbose (-v): Displays all syllables and their human-readable instructions during execution
+    --inspect (-i): Displays the state of all consonants and the array after each instruction (useful for debugging)
+"""
+
 import json
 import argparse
 
 parser = argparse.ArgumentParser(description="Run Nonsense programs.")
-parser.add_argument("paragraph", type=str, help="A Nonsense paragraph.")
+parser.add_argument("paragraph", type=str, help="A valid Nonsense paragraph.")
 parser.add_argument("--verbose", "-v", action="store_true")
 parser.add_argument("--inspect", "-i", action="store_true")
 args = parser.parse_args()

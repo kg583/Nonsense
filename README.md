@@ -4,7 +4,7 @@ Nonsense is an esoteric programming language (or esolang) where pretty much any 
 
 `72 ey 100 envoy nab 108 eyry em 111 entry 32 ey eon 119 ey try 114 ey my by nay`
 
-While reminiscent of a monkey picking words from a dictionary, Nonsense has some nice structure built around the phonetics and syntax of English itself. And, unlike some other languages which utilize English letters for commands, all Nonsense commands must be valid English _words_ (or numbers or punctuation) where case does not matter, with the structure of word itself being critical (rather than just the order of the letters). It's also Turing-complete by reductio ad BrainFuck.
+While reminiscent of a monkey picking words from a dictionary, Nonsense has some nice structure built around the phonetics and syntax of English itself. And, unlike some other languages which utilize English letters for commands, all Nonsense commands must be valid English _words_ (or numbers or punctuation) where case does not matter, with the structure of word itself being critical (rather than just the order of the letters). It's also Turing-complete since any BrainFuck program can be translated to Nonsense (see `bf_convert.py`).
 
 Nonsense interprets words by splitting them into _syllables_, each containing  _consonants_ and _vowels_ (where `y` is a vowel). Consonants correspond to variables, while vowels correspond to instructions. Integers can be stored in consonant variables as well as the _array_ (denoted `S` here), an arbitrarily long list (initialized to zeroes) which is accessed by indexing (see the section on the letter `e` below). The zeroth entry in the array is called _result_, and is always updated with the value of the most recent command (think of it like `Ans` in TI-Basic).
 

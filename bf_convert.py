@@ -1,3 +1,12 @@
+"""
+Script to convert any BrainFuck into Nonsense via a set of simple substitutions
+Reads input from stdin via a single ": " prompt
+Prints any output to stdout
+
+params:
+    program: A BF program (all non-BF characters are ignored)
+"""
+
 import argparse
 
 parser = argparse.ArgumentParser(description="Converts a BF program into Nonsense using basic substitutions.")
