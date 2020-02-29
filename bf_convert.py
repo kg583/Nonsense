@@ -1,7 +1,6 @@
 """
-Script to convert any BrainFuck into Nonsense via a set of simple substitutions
-Reads input from stdin via a single ": " prompt
-Prints any output to stdout
+Script to convert any BrainFuck program into Nonsense via a set of simple substitutions
+Returns a Nonsense paragraph to stdout
 
 params:
     program: A BF program (all non-BF characters are ignored)
