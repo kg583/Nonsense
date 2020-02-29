@@ -82,10 +82,14 @@ def execute(syllable):
     S[0] = op + source * add
 
     if 2 in look:
+        if VALS[loc] < 0 or S[VALS[loc]] < 0:
+            raise ValueError("Cannot access array by negative indexing.") from None
         extend(S[VALS[loc]])
         loc_str = wrap(wrap(loc))
         S[S[VALS[loc]]] = S[0]
     elif 1 in look:
+        if VALS[loc] < 0:
+            raise ValueError("Cannot access array by negative indexing.") from None
         extend(VALS[loc])
         S[VALS[loc]] = S[0]
         loc_str = wrap(loc)
@@ -169,7 +173,12 @@ def main():
         print("Syllables: ", str(syllables))
 
     counter = 0
+    instr = 0
     while counter < len(syllables):
+        if args.inspect:
+            print("--------Instruction #{} @ Syllable #{}--------".format(instr, counter))
+
+        instr += 1
         seg = syllables[counter]
         if isinstance(seg, str):
             if seg in PUNCTUATION:
@@ -178,7 +187,7 @@ def main():
                         counter = search(syllables, counter)
                     else:
                         STACK.insert(0, (counter, seg))
-                    counter += 1
+                        counter += 1
                 elif seg == ".":
                     if len(STACK):
                         counter = STACK[0][0] if STACK[0][1] == "," else counter + 1
