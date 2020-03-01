@@ -5,17 +5,20 @@ Prints any output to stdout
 
 params:
     paragraph: A valid Nonsense paragraph
-    --verbose (-v): Displays all syllables and their human-readable instructions during execution
-    --inspect (-i): Displays the state of all consonants and the array after each instruction (useful for debugging)
+    --char (-c): Restricts array cells to char values (0 to 255)
+                 Defaults to unflagged
+    --inspect (-i): Displays the state of the paragraph after each instruction (useful for debugging)
+                    Defaults to unflagged
 """
 
 import json
 import argparse
+import functools
 
 parser = argparse.ArgumentParser(description="Run Nonsense programs.")
 parser.add_argument("paragraph", type=str, help="A valid Nonsense paragraph.")
-parser.add_argument("--verbose", "-v", action="store_true")
-parser.add_argument("--inspect", "-i", action="store_true")
+parser.add_argument("--char", "-c", action="store_true", help="Enforce chars in array")
+parser.add_argument("--inspect", "-i", action="store_true", help="Display program state during execution")
 args = parser.parse_args()
 
 VOWELS = " aeiouy"
@@ -23,8 +26,14 @@ CONSONANTS = "0bcdfghjklmnpqrstvwxz"
 PUNCTUATION = ",.?!"
 
 S = [0]
-VALS = {letter: 0 for letter in CONSONANTS}
 STACK = []
+exec(" = ".join(reversed(CONSONANTS)))
+
+TABLES = {"a": {32: "+", 43: "+", 45: "-"},
+          "e": {},
+          "i": {32: "-", 43: "-", 45: "+"},
+          "o": {32: "+", 43: "+", 45: "-"},
+          "y": {}}
 
 
 def load_words():
@@ -34,115 +43,33 @@ def load_words():
     return valid_words
 
 
-def extend(index):
-    S.extend([0] * (index - len(S) + 1))
+def extend(size):
+    S.extend([0] * (size - len(S) + 1))
 
 
-def lookahead(string, index, dist=2, letter="e"):
-    return [i + 1 for i in range(dist) if len(string) > index + i + 1 and string[index + i + 1] == letter]
+def lookahead(string, loc, dist=2):
+    return [i + 1 for i in range(dist) if len(string) > loc + i + 1 and string[loc + i + 1] == "e"]
 
 
 def wrap(string):
+    extend(eval(string))
     return "S[" + string + "]"
 
 
-def execute(syllable):
-    init = syllable[0]
-    op = VALS[init]
-    add = 0
-    inc = False
+def repeat(num_times):
+    def decorator_repeat(func):
+        @functools.wraps(func)
+        def wrapper_repeat(param):
+            for _ in range(num_times):
+                param = func(param)
+            return param
 
-    init_str = init
-    instr_str = ""
-    sec_str = ""
-    loc_str = "S[0]"
-    print_str = ""
+        return wrapper_repeat
 
-    index = 1
-    letter = syllable[1]
-    source = 0
-    while letter in VOWELS:
-        if letter == "a":
-            add += (add == 0)
-        elif letter == "e":
-            init_str = "S[" + init_str + "]"
-            op = S[op] if op < len(S) else 0
-        elif letter == "i":
-            add = -1 + 2 * (add == -1)
-        elif letter == "o":
-            source += 1
-            add += (add == 0)
-            inc = True
-        elif letter == "y":
-            if op == 0 and syllable[0] == "0":
-                op = int(input(": "))
-                init_str = "input()"
-            else:
-                print_str += chr(op + source)
-
-        index += 1
-        letter = syllable[index]
-
-    loc = letter
-    look = lookahead(syllable, index)
-    if not source:
-        source = S[S[VALS[loc]]] if 2 in look else S[VALS[loc]] if 1 in look else VALS[loc]
-    else:
-        sec_str = str(source)
-    S[0] = op + source * add
-
-    if 2 in look:
-        if VALS[loc] < 0 or S[VALS[loc]] < 0:
-            raise ValueError("Cannot access array by negative indexing.") from None
-        extend(S[VALS[loc]])
-        loc_str = wrap(wrap(loc))
-        S[S[VALS[loc]]] = S[0]
-    elif 1 in look:
-        if VALS[loc] < 0:
-            raise ValueError("Cannot access array by negative indexing.") from None
-        extend(VALS[loc])
-        S[VALS[loc]] = S[0]
-        loc_str = wrap(loc)
-    else:
-        S[0] = op + source * add
-        if loc != "0" or inc:
-            if loc == "0":
-                loc = init
-            VALS[loc] = S[0]
-            loc_str = loc
-
-    if loc_str == "0":
-        loc_str = wrap(loc_str)
-
-    if add > 0:
-        instr_str = "+"
-    elif add < 0:
-        instr_str = "-"
-    if add and not sec_str:
-        sec_str = loc_str if loc != "0" else "0"
-
-    full_str = init_str + instr_str + sec_str + "->" + loc_str
-    full_str.replace("+-", "-").replace("-+", "-").replace("--", "+")
-    if args.verbose or args.inspect:
-        print(syllable + ": " + full_str)
-        if args.inspect:
-            print("Vars: {}".format(VALS))
-            print("Array: {}".format(S))
-    return print_str
+    return decorator_repeat
 
 
-def search(words, counter):
-    count = 1
-    counter += 1
-
-    while count:
-        count += {",": 1, "?": 1, ".": -1}.get(words[counter], 0)
-        counter += 1
-
-    return counter
-
-
-def main():
+if __name__ == "__main__":
     paragraph = args.paragraph.lower()
     if "\\" in paragraph:
         paragraph = paragraph[:paragraph.find("\\")]
@@ -182,47 +109,84 @@ def main():
         else:
             raise ValueError(word + " is not a numeral, English word, or punctuation mark.") from None
 
-    if args.verbose:
+    if args.inspect:
         print("Syllables: ", str(syllables))
 
-    counter = 0
-    instr = 0
-    while counter < len(syllables):
+    counter, syllable = 0, 0
+    while syllable < len(syllables):
         if args.inspect:
-            print("--------Instruction #{} @ Syllable #{}--------".format(instr, counter))
+            print("--------Instruction #{} @ Syllable #{}--------".format(counter, syllable))
 
-        instr += 1
-        seg = syllables[counter]
+        seg = syllables[syllable]
         if isinstance(seg, str):
             if seg in PUNCTUATION:
                 if seg == "," or seg == "?":
                     if not S[0]:
-                        counter = search(syllables, counter)
+                        count = 1
+                        syllable += 1
+                        while count := count + {",": 1, "?": 1, ".": -1}.get(syllables[syllable], 0):
+                            syllable += 1
                     else:
-                        STACK.insert(0, (counter, seg))
-                        counter += 1
+                        STACK.insert(0, (syllable, seg))
                 elif seg == ".":
                     if len(STACK):
-                        counter = STACK[0][0] if STACK[0][1] == "," else counter + 1
+                        if STACK[0][1] == ",":
+                            syllable = STACK[0][0] - 1
                         STACK.pop(0)
                     else:
                         raise ValueError("Invalid end ('.') without corresponding ',' or '?'.")
-                elif seg == "!":
-                    counter += 1
-                    if S[0]:
-                        counter = len(syllables)
+                elif seg == "!" and not S[0]:
+                    syllable = len(syllables)
             else:
-                print(execute(seg), end="")
-                counter += 1
+                instr = ["S[0]", seg[0], " ", " ", ""]
+                index = 1
+
+                while (letter := seg[index]) in VOWELS:
+                    instr[2] = instr[2].translate(TABLES[letter])
+                    if letter == "e":
+                        instr[1] = wrap(instr[1])
+                    elif letter == "o":
+                        instr[0] = instr[1]
+                        instr[3] = "1"
+                    elif letter == "y":
+                        if index == 1 and instr[1] == "0":
+                            instr[1] = "input()"
+                        else:
+                            instr[4] += "S[0], "
+
+                    index += 1
+
+                if letter != "0":
+                    instr[0] = repeat(max(lookahead(seg, index) + [0]))(wrap)("{}".format(letter))
+                if instr[2] != " " and instr[3] == " ":
+                    instr[3] = instr[0]
+
+                instruction = "S[0] = {} = {} {} {}".format(*instr[:4])
+                if args.char:
+                    instruction += "; S = list(map(lambda cell: cell % 256, S))"
+                if instr[4] and not args.inspect:
+                    instruction += "; print(*map(chr, ({})), end='')".format(instr[4])
+                exec(instruction)
+
+                if args.inspect:
+                    display = "{}: {}{}{}".format(seg, *instr[1:4]).strip() + "->{}".format(instr[0])
+                    if instr[4]:
+                        display += "; print({})".format(instr[4][:-2])
+                    print(display)
         elif isinstance(seg, int):
             S[0] = seg
-            counter += 1
 
-            if args.verbose:
-                print(str(seg) + ": " + str(seg) + "->S[0]")
+            if args.inspect:
+                print("{}: {}->S[0]".format(seg, seg))
         else:
             raise ValueError("Invalid word passed through compilation.") from None
 
+        if args.inspect:
+            print("Vars:", end=" ")
+            print(*["{}={}".format(consonant, eval(consonant)) for consonant in CONSONANTS if
+                    eval(consonant)], sep=" ")
+            print("Array: {}".format(S))
+            print("Stack: {}".format(STACK))
 
-if __name__ == "__main__":
-    main()
+        syllable += 1
+        counter += 1

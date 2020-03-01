@@ -6,11 +6,11 @@ Nonsense is an esoteric programming language (or esolang) where pretty much any 
 
 While reminiscent of a monkey picking words from a dictionary, Nonsense has some nice structure built around the phonetics and syntax of English itself. And, unlike some other languages which utilize English letters for commands, all Nonsense commands must be valid English _words_ (or numbers or punctuation) where case does not matter, with the structure of word itself being critical (rather than just the order of the letters). It's also Turing-complete since any BrainFuck program can be translated to Nonsense (see `bf_convert.py`).
 
-Nonsense interprets words by splitting them into _syllables_, each containing  _consonants_ and _vowels_ (where `y` is a vowel). Consonants correspond to variables, while vowels correspond to instructions. Integers can be stored in consonant variables as well as the _array_ (denoted `S` here), an arbitrarily long list (initialized to zeroes) which is accessed by indexing (see the section on the letter `e` below). The zeroth entry in the array is called _result_, and is always updated with the value of the most recent command (think of it like `Ans` in TI-Basic).
+Nonsense interprets words by splitting them into _syllables_, each containing  _consonants_ and _vowels_ (where `y` is a vowel). Consonants correspond to variables, while vowels correspond to instructions. Integers can be stored in consonant variables as well as the _array_ (denoted `S` here), an arbitrarily long list of integers (either Python ints or chars; see `interpreter.py`) initialized to zeroes which is accessed by indexing (see the section on the letter `e` below). The zeroth entry in the array is called _result_, and is always updated with the value of the most recent command (think of it like `Ans` in TI-Basic).
 
-To run Nonsense programs for yourself, simply download `interpreter.py` and the associated `words_dictionary.json` file into the same directory; the dictionary file is used to check that all words are valid English words, and is actually quite lenient for what does count as word. Run `interpreter.py` with your program (or as it is called, a _paragraph_) as the first argument. You can specify the optional `-v` or `--verbose` argument to have the interpreter return a list of parsed syllables and their human-readable instructions; otherwise, the interpreter will simply display the final output and ask for any inputs during execution (these are prompted by a single `:`).
+To run Nonsense programs for yourself, simply download `interpreter.py` and the associated `words_dictionary.json` file into the same directory; the dictionary file is used to check that all words are valid English words, and is actually quite lenient for what does count as word. Run `interpreter.py` with your program (or as it is called, a _paragraph_) as the first argument. The interpreter will display any output and ask for any inputs during execution (these are prompted by a single `:`).
 
-To aid debugging, a paragraph can be executed via `interpreter.py` with the `-i` or `--inspect` flag, which will display the current state of all consonants and the array after each instruction execution. Note that the array is not enlarged until necessary.
+To aid debugging, a paragraph can be executed via `interpreter.py` with the `-i` or `--inspect` flag, which will display the current state of all consonants, the array, and the stack after each instruction execution. Note that the array is not enlarged until necessary, and only nonzero consonants are displayed.
 
 ## Syllables
 
@@ -51,6 +51,7 @@ The INDEX command accesses the array either by designating the operand as the in
 * `beet` : `S[S[b]]->t`
 * `err` : `S[0]->r; r->r` (due to the implicit `0`)
 * `cane` : `c+S[n]->S[n]; S[n]` (here, the syllable must look ahead a letter to see if the location is an array entry, and always does)
+* `aerate` : `S[0]+r->r; r+S[t]->S[t]` (indexing "passes through" other vowels; `ae` behaves identically to `ea`)
 
 ### `i`: MINUS
 
@@ -69,9 +70,10 @@ ONE is one. Just like, the number one. What more do you need?
 But seriously, the ONE command will increment (or decrement, if subtracting) the operand by one and store it to the location. If a syllable ends with the implicit `0`, in addition to storing to result, the ONE command does in-place increment/decrement.
 
 * `row` : `r+1->w`
+* `roe` : `S[r]+1->S[r]`
 * `road` : `r+1->d` (did you expect it to be different?)
 * `avoid` : `0+v->v; v-1->d`
-* `oat` : `1+t->t`
+* `oat` : `0+1->t` (easy 1-ing!?)
 * `toon` : `t+2->n` (1+1=2)
 * `moo` : `m+2->m`
 
@@ -95,6 +97,7 @@ The I/O command is for inputting integers and outputting text in a program. When
 * `you` : `input()+1`
 * `cyan` : `print c; c+n->n`
 * `syzygy` : `print s; s->z; print z; z->g; print g`
+* `oyster` : `print S[0]; 0+1->s; s->S[t]; S[t]->r`
 
 ### Some Big Ol' Words, Parsed
 
