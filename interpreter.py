@@ -163,7 +163,8 @@ if __name__ == "__main__":
 
                 instruction = "S[0] = {} = {} {} {}".format(*instr[:4])
                 if args.char:
-                    instruction += "; S = list(map(lambda cell: cell % 256, S))"
+                    instruction += "; S = list(map(lambda cell: cell % 256, S)); "
+                    instruction += "; ".join("{} %= 256".format(consonant) for consonant in CONSONANTS[1:])
                 if instr[4] and not args.inspect:
                     instruction += "; print(*map(chr, ({})), end='')".format(instr[4])
                 exec(instruction)
