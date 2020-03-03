@@ -139,7 +139,16 @@ SUBS = {"b": {">": "bob",
               "[": "tea,",
               "]": "tea.",
               "_": ""
-              }
+              },
+        "v": {">": "vow evaluate",
+              "<": "void advice",
+              "+": "pave",
+              "-": "navel",
+              ".": "very",
+              ",": "yum ensue svelte",
+              "[": "vet,",
+              "]": "vet.",
+              "_": "pop ion"}
         }
 
 
