@@ -161,10 +161,10 @@ if __name__ == "__main__":
                 if instr[2] != " " and instr[3] == " ":
                     instr[3] = instr[0]
 
-                instruction = "S[0] = {} = {} {} {}".format(*instr[:4])
                 if args.char:
-                    instruction += "; S = list(map(lambda cell: cell % 256, S)); "
-                    instruction += "; ".join("{} %= 256".format(consonant) for consonant in CONSONANTS[1:])
+                    instruction = "S[0] = {} = ({} {} {}) % 256".format(*instr[:4])
+                else:
+                    instruction = "S[0] = {} = {} {} {}".format(*instr[:4])
                 if instr[4] and not args.inspect:
                     instruction += "; print(*map(chr, ({})), end='')".format(instr[4])
                 exec(instruction)
