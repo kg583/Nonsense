@@ -150,7 +150,7 @@ if __name__ == "__main__":
                         instr[3] = "1"
                     elif letter == "y":
                         if index == 1 and instr[1] == "0":
-                            instr[1] = "input()"
+                            instr[1] = "int(input(':'))"
                         else:
                             instr[4] += "S[0], "
 
