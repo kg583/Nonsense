@@ -9,6 +9,8 @@ params:
                  Defaults to unflagged
     --inspect (-i): Displays the state of the paragraph after each instruction (useful for debugging)
                     Defaults to unflagged
+    -- write (-w): Writes equivalent Python 3 code to the specified file during execution
+                   Defaults to "" (no file, does not write)
 """
 
 import json
@@ -19,6 +21,7 @@ parser = argparse.ArgumentParser(description="Run Nonsense programs.")
 parser.add_argument("paragraph", type=str, help="A valid Nonsense paragraph.")
 parser.add_argument("--char", "-c", action="store_true", help="Enforce chars in array")
 parser.add_argument("--inspect", "-i", action="store_true", help="Display program state during execution")
+parser.add_argument("--write", "-w", type=str, default="", help="File to write Python 3 equivalent code")
 args = parser.parse_args()
 
 VOWELS = " aeiouy"
@@ -69,6 +72,48 @@ def repeat(num_times):
     return decorator_repeat
 
 
+def interpret(syllable):
+    instr = ["S[0]", syllable[0], " ", " ", ""]
+    loc = 1
+
+    while (letter := syllable[loc]) in VOWELS:
+        instr[2] = instr[2].translate(TABLES[letter])
+        if letter == "e":
+            instr[1] = wrap(instr[1])
+        elif letter == "o":
+            instr[0] = instr[1]
+            instr[3] = "1"
+        elif letter == "y":
+            if loc == 1 and instr[1] == "0":
+                instr[1] = "int(input(':'))"
+            else:
+                instr[4] += "S[0], "
+
+        loc += 1
+
+    if letter != "0":
+        instr[0] = repeat(max(lookahead(seg, loc) + [0]))(wrap)("{}".format(letter))
+    if instr[2] != " " and instr[3] == " ":
+        instr[3] = instr[0]
+
+    destination = "S[0] = {}".format(instr[0]).replace("S[0] = S[0]", "S[0]")
+    operation = "{} {} {}".format(*instr[1:4]).strip()
+    if args.char:
+        instruction = "{} = ({}) % 256".format(destination, operation)
+    else:
+        instruction = "{} = {}".format(destination, operation)
+    if instr[4] and not args.inspect:
+        instruction += "\nprint(*map(chr, ({})), end='')".format(instr[4])
+
+    if args.inspect:
+        display = "{}: {}{}{}".format(seg, *instr[1:4]).strip() + "->{}".format(instr[0])
+        if instr[4]:
+            display += "; print({})".format(instr[4][:-2])
+        print(display)
+
+    return instruction
+
+
 if __name__ == "__main__":
     paragraph = args.paragraph.lower()
     if "\\" in paragraph:
@@ -112,68 +157,43 @@ if __name__ == "__main__":
     if args.inspect:
         print("Syllables: ", str(syllables))
 
-    counter, syllable = 0, 0
-    while syllable < len(syllables):
+    counter, reader = 0, 0
+    while reader < len(syllables):
         if args.inspect:
-            print("--------Instruction #{} @ Syllable #{}--------".format(counter, syllable))
+            print("--------Instruction #{} @ Syllable #{}--------".format(counter, reader))
 
-        seg = syllables[syllable]
+        seg = syllables[reader]
         if isinstance(seg, str):
             if seg in PUNCTUATION:
                 if seg == "," or seg == "?":
                     if not S[0]:
                         count = 1
-                        syllable += 1
-                        while count := count + {",": 1, "?": 1, ".": -1}.get(syllables[syllable], 0):
-                            syllable += 1
+                        reader += 1
+                        while count := count + {",": 1, "?": 1, ".": -1}.get(syllables[reader], 0):
+                            reader += 1
                     else:
-                        STACK.insert(0, (syllable, seg))
+                        STACK.insert(0, (reader, seg))
+
+                    if args.inspect:
+                        print("{} S[0]:".format("while" if seg == "," else "if"))
                 elif seg == ".":
                     if len(STACK):
                         if STACK[0][1] == ",":
-                            syllable = STACK[0][0] - 1
+                            reader = STACK[0][0] - 1
                         STACK.pop(0)
                     else:
                         raise ValueError("Invalid end ('.') without corresponding ',' or '?'.")
+
+                    if args.inspect:
+                        print("end")
                 elif seg == "!" and not S[0]:
-                    syllable = len(syllables)
-            else:
-                instr = ["S[0]", seg[0], " ", " ", ""]
-                index = 1
-
-                while (letter := seg[index]) in VOWELS:
-                    instr[2] = instr[2].translate(TABLES[letter])
-                    if letter == "e":
-                        instr[1] = wrap(instr[1])
-                    elif letter == "o":
-                        instr[0] = instr[1]
-                        instr[3] = "1"
-                    elif letter == "y":
-                        if index == 1 and instr[1] == "0":
-                            instr[1] = "int(input(':'))"
-                        else:
-                            instr[4] += "S[0], "
-
-                    index += 1
-
-                if letter != "0":
-                    instr[0] = repeat(max(lookahead(seg, index) + [0]))(wrap)("{}".format(letter))
-                if instr[2] != " " and instr[3] == " ":
-                    instr[3] = instr[0]
-
-                if args.char:
-                    instruction = "S[0] = {} = ({} {} {}) % 256".format(*instr[:4])
+                    reader = len(syllables)
+                    if args.inspect:
+                        print("break")
                 else:
-                    instruction = "S[0] = {} = {} {} {}".format(*instr[:4])
-                if instr[4] and not args.inspect:
-                    instruction += "; print(*map(chr, ({})), end='')".format(instr[4])
-                exec(instruction)
-
-                if args.inspect:
-                    display = "{}: {}{}{}".format(seg, *instr[1:4]).strip() + "->{}".format(instr[0])
-                    if instr[4]:
-                        display += "; print({})".format(instr[4][:-2])
-                    print(display)
+                    raise ValueError("Invalid punctuation passed through compilation.") from None
+            else:
+                exec(interpret(seg))
         elif isinstance(seg, int):
             S[0] = seg
 
@@ -189,5 +209,38 @@ if __name__ == "__main__":
             print("Array: {}".format(S))
             print("Stack: {}".format(STACK))
 
-        syllable += 1
+        reader += 1
         counter += 1
+
+    if args.write:
+        write_file = open(args.write, 'w')
+
+        if "!" in syllables:
+            print("import sys", file=write_file)
+        print(" = ".join(reversed(CONSONANTS)), file=write_file)
+        print("S = {}".format([0] * len(S)), file=write_file)
+
+        tabs = 0
+        for seg in syllables:
+            if isinstance(seg, str):
+                if seg in PUNCTUATION:
+                    if seg == ",":
+                        print(("\t" * tabs) + "while S[0]:", file=write_file)
+                        tabs += 1
+                    elif seg == "?":
+                        print(("\t" * tabs) + "if S[0]:", file=write_file)
+                        tabs += 1
+                    elif seg == ".":
+                        tabs -= 1
+                        if tabs < 0:
+                            raise ValueError("Invalid end ('.') without corresponding ',' or '?'.")
+                    elif seg == "!":
+                        print(("\t" * tabs) + "sys.exit()", file=write_file)
+                    else:
+                        raise ValueError("Invalid punctuation passed through compilation.") from None
+                else:
+                    print(("\t" * tabs) + interpret(seg), file=write_file)
+            elif isinstance(seg, int):
+                print(("\t" * tabs) + "S[0] = {}".format(seg), file=write_file)
+            else:
+                raise ValueError("Invalid word passed through compilation.") from None
