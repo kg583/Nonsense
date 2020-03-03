@@ -22,25 +22,57 @@ SUBS = {"b": {">": "bob",
               ".": "berry",
               ",": "mimic yum member",
               "[": "be,",
-              "]": "be."
+              "]": "be.",
+              "_": ""
+              },
+        "c": {">": "cock",
+              "<": "coin anchor",
+              "+": "cedar do dance",
+              "-": "cent backs noise",
+              ".": "celery",
+              ",": "bank kin yum bet trance",
+              "[": "cell,",
+              "]": "cell.",
+              "_": ""},
+        "d": {">": "do",
+              "<": "doing and",
+              "+": "deck code",
+              "-": "den pander",
+              ".": "deny",
+              ",": "yum bender",
+              "[": "dell,",
+              "]": "dell.",
+              "_": "ion nap"
+              },
+        "f": {">": "or raft",
+              "<": "waft",
+              "+": "cafe",
+              "-": "safe",
+              ".": "fey",
+              ",": "aft yum elm alter",
+              "[": "fend,",
+              "]": "fend.",
+              "_": "ion ew estuary octopus"
               },
         "p": {">": "pop",
-              "<": "or iridium rap",
+              "<": "rap",
               "+": "octagon cape",
               "-": "ion nape",
               ".": "petty",
-              ",": "mimic tit yam mat tape",
+              ",": "mimic tit yam tamper",
               "[": "peg,",
-              "]": "peg."
+              "]": "peg.",
+              "_": "or iridium"
               },
         "r": {">": "octopus car",
-              "<": "ion narcotic",
+              "<": "narcotic",
               "+": "off fare",
-              "-": "oink educate dare",
+              "-": "oil educate dare",
               ".": "rescue cyan",
               ",": "yum ectoplasm credit",
               "[": "red,",
-              "]": "red."
+              "]": "red.",
+              "_": "ion"
               },
         "s": {">": "so",
               "<": "soils",
@@ -49,7 +81,8 @@ SUBS = {"b": {">": "bob",
               ".": "sexy",
               ",": "yum etch it itself",
               "[": "set,",
-              "]": "set."
+              "]": "set.",
+              "_": ""
               },
         "t": {">": "to",
               "<": "lilac toilet",
@@ -58,14 +91,15 @@ SUBS = {"b": {">": "bob",
               ".": "tech cyan",
               ",": "yum enter",
               "[": "tea,",
-              "]": "tea."
+              "]": "tea.",
+              "_": ""
               }
         }
 
 
 def main():
     paragraph = ""
-    for char in ">" + args.program:
+    for char in "_>" + args.program:
         sub = SUBS.get(args.pointer[0], "s").get(char, "")
         paragraph += sub + (" " if sub else "")
 
