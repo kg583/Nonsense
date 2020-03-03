@@ -2,7 +2,7 @@
 
 Nonsense is an esoteric programming language (or esolang) where pretty much any English sentence you could concoct is a valid program. The catch is, though, that most "useful" programs are usually _nonsensical_ jumbles of words rather than coherent sentences. For example, here's "Hello world!":
 
-`72 ey 100 envoy nab 108 eyry em 111 entry 32 ey eon 119 ey try 114 ey my by nay`
+`72 ey 100 envoy nab 108 eyry em 111 entry 32 ey eon 119 ey try 114 ey my by ny`
 
 While reminiscent of a monkey picking words from a dictionary, Nonsense has some nice structure built around the phonetics and syntax of English itself. And, unlike some other languages which utilize English letters for commands, all Nonsense commands must be valid English _words_ (or numbers or punctuation) where case does not matter, with the structure of word itself being critical (rather than just the order of the letters). It's also Turing-complete since any BrainFuck program can be translated to Nonsense (see `bf_convert.py`).
 
@@ -95,9 +95,9 @@ The I/O command is for inputting integers and outputting text in a program. When
 * `yam` : `input()+m->m`
 * `yes` : `S[input()]->s`
 * `you` : `input()+1`
-* `cyan` : `print c; c+n->n`
-* `syzygy` : `print s; s->z; print z; z->g; print g`
-* `oyster` : `print S[0]; 0+1->s; s->S[t]; S[t]->r`
+* `cyan` : `c+n->n; print n` (note that printing always occurs _after_ syllable execution using result)
+* `syzygy` : `s->z; print z; z->g; print g; print g`
+* `oyster` : `0+1->s; print S[0]; s->S[t]; S[t]->r`
 
 ### Some Big Ol' Words, Parsed
 
