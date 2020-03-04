@@ -178,6 +178,26 @@ SUBS = {"b": {">": "bob",
               "[": "wet,",
               "]": "wet.",
               "_": "coin anchor"
+              },
+        "x": {">": "fax",
+              "<": "tax",
+              "+": "faxes",
+              "-": "taxes",
+              ".": "axe ey",
+              ",": "yum relaxes",
+              "[": "axe,",
+              "]": "axe.",
+              "_": "wow waft ion ant"
+              },
+        "z": {">": "jazz",
+              "<": "dazzle",
+              "+": "raze",
+              "-": "daze",
+              ".": "zesty",
+              ",": "yum etch haze",
+              "[": "zest,",
+              "]": "zest.",
+              "_": "or bob abjure void"
               }
         }
 
