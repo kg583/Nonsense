@@ -5,14 +5,15 @@ Returns a Nonsense paragraph to stdout
 params:
     program: A BF program (all non-BF characters are ignored)
     --pointer (-p): A consonant to use as the primary BF pointer
-                    Defaults to 's' if unspecified or consonant cannot be used
+                    Defaults to a random consonant if unspecified
 """
 
 import argparse
+import random
 
 parser = argparse.ArgumentParser(description="Convert a BF program into Nonsense.")
 parser.add_argument("program", type=str, help="A BF program.")
-parser.add_argument("--pointer", "-p", type=str, default="s", help="The consonant to serve as the BF pointer")
+parser.add_argument("--pointer", "-p", type=str, default="", help="The consonant to serve as the BF pointer")
 args = parser.parse_args()
 
 SUBS = {"b": {">": "bob",
@@ -131,6 +132,16 @@ SUBS = {"b": {">": "bob",
               "]": "peg.",
               "_": "or iridium"
               },
+        "q": {">": "quo ebb boas squeak",
+              "<": "quiet elm lions squeeze",
+              "+": "quick end egg geode",
+              "-": "qualify evolution old veil halve",
+              ".": "tit quest teeny",
+              ",": "quarrel emptier yum emerge",
+              "[": "quack elk keg,",
+              "]": "quoin ew web.",
+              "_": ""
+              },
         "r": {">": "octopus car",
               "<": "narcotic",
               "+": "off fare",
@@ -204,8 +215,9 @@ SUBS = {"b": {">": "bob",
 
 def main():
     paragraph = ""
+    letter = args.pointer[0] if args.pointer and args.pointer[0] in SUBS else random.choice("bcdfghjklmnpqrstvwxz")
     for char in "_>" + args.program:
-        sub = SUBS.get(args.pointer[0], "s").get(char, "")
+        sub = SUBS[letter].get(char, "")
         paragraph += sub + (" " if sub else "")
 
     print(paragraph)
