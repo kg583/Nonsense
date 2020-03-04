@@ -92,9 +92,9 @@ def interpret(syllable):
         loc += 1
 
     if letter != "0":
-        instr[0] = repeat(max(lookahead(seg, loc) + [0]))(wrap)("{}".format(letter))
+        instr[0] = repeat(max(lookahead(syllable, loc) + [0]))(wrap)("{}".format(letter))
     if instr[2] != " " and instr[3] == " ":
-        instr[3] = instr[0]
+        instr[3] = instr[0] if instr[0] != "S[0]" else "0"
 
     destination = "S[0] = {}".format(instr[0]).replace("S[0] = S[0]", "S[0]")
     operation = "{} {} {}".format(*instr[1:4]).strip()

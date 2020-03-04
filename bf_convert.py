@@ -169,7 +169,16 @@ SUBS = {"b": {">": "bob",
               ",": "yum ensue svelte",
               "[": "vet,",
               "]": "vet.",
-              "_": "pop ion"}
+              "_": "pop ion"},
+        "w": {">": "wow",
+              "<": "caw",
+              "+": "wet tower",
+              "-": "west soils swerve",
+              ".": "west say",
+              "[": "wet,",
+              "]": "wet.",
+              "_": "coin anchor"
+              }
         }
 
 
