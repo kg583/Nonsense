@@ -9,7 +9,7 @@ params:
                  Defaults to unflagged
     --inspect (-i): Displays the state of the paragraph after each instruction (useful for debugging)
                     Defaults to unflagged
-    -- write (-w): Writes equivalent Python 3 code to the specified file during execution
+    -- write (-w): Writes equivalent (but not necessarily optimized) Python 3 code to the specified file after execution
                    Defaults to "" (no file, does not write)
 """
 
