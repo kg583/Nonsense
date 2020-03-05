@@ -85,7 +85,7 @@ def interpret(syllable):
             instr[3] = "1"
         elif letter == "y":
             if loc == 1 and instr[1] == "0":
-                instr[1] = "int(input(':'))"
+                instr[1] = "ord(input(':'))"
             else:
                 instr[4] += "S[0], "
 
