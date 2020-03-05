@@ -1,14 +1,15 @@
 """
 Main interpreter script for Nonsense
-Reads input from stdin via a single ": " prompt
 Prints any output to stdout
 
 params:
     paragraph: A valid Nonsense paragraph
     --char (-c): Restricts array cells to char values (0 to 255)
                  Defaults to unflagged
-    --inspect (-i): Displays the state of the paragraph after each instruction (useful for debugging)
-                    Defaults to unflagged
+    --debug (-d): Displays the state of the paragraph after each instruction
+                  Defaults to unflagged
+    --input (-i): Program input as a single line, to be read character-by-character during execution
+                  Defaults to "" (input requested during execution by a single ':' prompt)
     -- write (-w): Writes equivalent (but not necessarily optimized) Python 3 code to the specified file after execution
                    Defaults to "" (no file, does not write)
 """
@@ -20,7 +21,8 @@ import functools
 parser = argparse.ArgumentParser(description="Run Nonsense programs.")
 parser.add_argument("paragraph", type=str, help="A valid Nonsense paragraph.")
 parser.add_argument("--char", "-c", action="store_true", help="Enforce chars in array")
-parser.add_argument("--inspect", "-i", action="store_true", help="Display program state during execution")
+parser.add_argument("--debug", "-d", action="store_true", help="Display program state during execution")
+parser.add_argument("--input", "-i", type=str, default="", help="Asks for program input at the start of execution")
 parser.add_argument("--write", "-w", type=str, default="", help="File to write Python 3 equivalent code")
 args = parser.parse_args()
 
@@ -85,7 +87,7 @@ def interpret(syllable):
             instr[3] = "1"
         elif letter == "y":
             if loc == 1 and instr[1] == "0":
-                instr[1] = "ord(input(':'))"
+                instr[1] = "next(memory)" if args.input else "ord(input(':'))"
             else:
                 instr[4] += "S[0], "
 
@@ -102,10 +104,10 @@ def interpret(syllable):
         instruction = "{} = ({}) % 256".format(destination, operation)
     else:
         instruction = "{} = {}".format(destination, operation)
-    if instr[4] and not args.inspect:
+    if instr[4] and not args.debug:
         instruction += "\nprint(*map(chr, ({})), end='')".format(instr[4])
 
-    if args.inspect:
+    if args.debug:
         display = "{}: {}{}{}".format(seg, *instr[1:4]).strip() + "->{}".format(instr[0])
         if instr[4]:
             display += "; print({})".format(instr[4][:-2])
@@ -154,12 +156,15 @@ if __name__ == "__main__":
         else:
             raise ValueError(word + " is not a numeral, English word, or punctuation mark.") from None
 
-    if args.inspect:
+    if args.debug:
         print("Syllables: ", str(syllables))
+
+    if args.input:
+        memory = iter(map(ord, args.input))
 
     counter, reader = 0, 0
     while reader < len(syllables):
-        if args.inspect:
+        if args.debug:
             print("--------Instruction #{} @ Syllable #{}--------".format(counter, reader))
 
         seg = syllables[reader]
@@ -174,7 +179,7 @@ if __name__ == "__main__":
                     else:
                         STACK.insert(0, (reader, seg))
 
-                    if args.inspect:
+                    if args.debug:
                         print("{} S[0]:".format("while" if seg == "," else "if"))
                 elif seg == ".":
                     if len(STACK):
@@ -184,25 +189,28 @@ if __name__ == "__main__":
                     else:
                         raise ValueError("Invalid end ('.') without corresponding ',' or '?'.")
 
-                    if args.inspect:
+                    if args.debug:
                         print("end")
                 elif seg == "!" and not S[0]:
                     reader = len(syllables)
-                    if args.inspect:
+                    if args.debug:
                         print("break")
                 else:
                     raise ValueError("Invalid punctuation passed through compilation.") from None
             else:
-                exec(interpret(seg))
+                try:
+                    exec(interpret(seg))
+                except StopIteration:
+                    raise ValueError("Insufficient program input provided.") from None
         elif isinstance(seg, int):
             S[0] = seg
 
-            if args.inspect:
+            if args.debug:
                 print("{}: {}->S[0]".format(seg, seg))
         else:
             raise ValueError("Invalid word passed through compilation.") from None
 
-        if args.inspect:
+        if args.debug:
             print("Vars:", end=" ")
             print(*["{}={}".format(consonant, eval(consonant)) for consonant in CONSONANTS if
                     eval(consonant)], sep=" ")
