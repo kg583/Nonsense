@@ -190,15 +190,15 @@ SUBS = {"b": {">": "bob",
               "]": "wet.",
               "_": "coin anchor"
               },
-        "x": {">": "fax",
+        "x": {">": "wax",
               "<": "tax",
-              "+": "faxes",
+              "+": "waxes",
               "-": "taxes",
               ".": "axe ey",
               ",": "yum relaxes",
               "[": "axe,",
               "]": "axe.",
-              "_": "wow waft ion ant"
+              "_": "wow ion ant"
               },
         "z": {">": "jazz",
               "<": "dazzle",
