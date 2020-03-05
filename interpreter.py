@@ -160,7 +160,7 @@ if __name__ == "__main__":
         print("Syllables: ", str(syllables))
 
     if args.input:
-        memory = iter(map(ord, args.input))
+        memory = iter(map(ord, args.input + "\0"))
 
     counter, reader = 0, 0
     while reader < len(syllables):
