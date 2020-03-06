@@ -4,7 +4,7 @@ Prints any output to stdout
 
 params:
     paragraph: A valid Nonsense paragraph
-    --char (-c): Restricts array cells to char values (0 to 255)
+    --char (-c): Restricts array cells & consonants to char values (0 to 255)
                  Defaults to unflagged
     --debug (-d): Displays the state of the paragraph after each instruction
                   Defaults to unflagged
