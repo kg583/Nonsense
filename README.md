@@ -104,7 +104,7 @@ The I/O command is for inputting integers and outputting text in a program. When
 * `invalidation` : `-n->n; n->v; v+l->l; l-d->d; d+t->t; t-1->n`
 * `beautiful` : `S[b]`
 * `elementary` : `S[0]->S[l]; S[l]->S[m]; S[m]->n; n->t; t+r->r; print r`
-* `onomatopoeia` : `1+n->n; n+1->m; m+t->t; t+1->p; S[p+1]`
+* `onomatopoeia` : `1+n->n; n+1->m; m+t->t; t+1->p; S[p-1]`
 * `spaghetti` : `s->p; p+g->g; g->S[h]; S[h]->t`
 * `liaison` : `l+s->s; s+1->n`
 
@@ -114,7 +114,7 @@ Punctuation marks are used to construct simple loops and conditionals within a N
 
 * `,` : Start of a `while` loop, which uses result as the loop condition; a result of zero will skip to the corresponding period.
 * `?` : Start of an `if` conditional, again using result; a result of zero will skip to the corresponding period.
-* `.` : End of a `while` loop or `if` conditional; the interpreter will always return to the corresponding comma upon arrival.
+* `.` : End of a `while` loop or `if` conditional; the interpreter will always return to the corresponding `,` or `?` upon arrival.
 * `!` : Break conditional, again using result; a nonzero result instantly terminates the program.
 
 ## Numbers
